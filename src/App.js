@@ -1,26 +1,58 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import List from './List'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    posts: [],
+    header: [
+      {
+        key: 'id',
+        title: 'ID',
+        sortable: false,
+      },
+      {
+        key: 'title',
+        title: 'Title',
+        sortable: true,
+      },
+      {
+        key: 'author',
+        title: 'Author',
+        sortable: true,
+      },
+    ],
+    loading: false,
+  }
+
+  componentDidMount() {
+    const api = 'https://www.reddit.com/r/reactjs/.json'
+
+    const headers = {
+      'Accept': 'application/json',
+    }
+
+    this.setState({
+      loading: true,
+    })
+
+    fetch(api, { headers })
+      .then(res => res.json())
+      .then(({ data }) => {
+        this.setState({
+          posts: data.children,
+          loading: false,
+        })
+      })
+  }
+
+  render() {
+    const { header, posts, loading } = this.state
+    return (
+      <div className="App">
+        <List header={header} itens={posts} loading={loading} />
+      </div>
+    )
+  }
 }
 
-export default App;
+export default App
